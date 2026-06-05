@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier le profil</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding-top: 80px;
+        }
+        h2 {
+            font-size: 32px;
+            color: #333;
+        }
+        form {
+            margin-top: 30px;
+        }
+        input[type="text"],
+        input[type="password"] {
+            padding: 10px;
+            margin: 10px;
+            width: 250px;
+            font-size: 16px;
+        }
+        input[type="submit"] {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h2>Modifier le profil</h2>
+   <form method="post" action="{{ url_for('web_auth.update_profile') }}">
+        <input type="text" name="username" value="{{ user.username }}" placeholder="Nouveau nom d'utilisateur" required><br>
+        <input type="password" name="password" placeholder="Nouveau mot de passe" required><br>
+        <input type="submit" value="Mettre à jour">
+    </form>
+</body>
+</html>

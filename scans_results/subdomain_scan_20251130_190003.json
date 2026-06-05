@@ -1,0 +1,92 @@
+{
+    "scan_type": "subdomain_scan",
+    "timestamp": "2025-11-30T19:00:03.794098",
+    "user": "test1",
+    "data": {
+        "domain": "google.com",
+        "found": [
+            {
+                "subdomain": "ns2.google.com",
+                "ip": "216.239.34.10",
+                "subdomain_prefix": "ns2"
+            },
+            {
+                "subdomain": "vpn.google.com",
+                "ip": "64.9.224.68",
+                "subdomain_prefix": "vpn"
+            },
+            {
+                "subdomain": "ns1.google.com",
+                "ip": "216.239.32.10",
+                "subdomain_prefix": "ns1"
+            },
+            {
+                "subdomain": "shop.google.com",
+                "ip": "64.233.184.92",
+                "subdomain_prefix": "shop"
+            },
+            {
+                "subdomain": "mail.google.com",
+                "ip": "172.217.18.197",
+                "subdomain_prefix": "mail"
+            },
+            {
+                "subdomain": "www.google.com",
+                "ip": "142.250.179.100",
+                "subdomain_prefix": "www"
+            },
+            {
+                "subdomain": "smtp.google.com",
+                "ip": "142.251.173.26",
+                "subdomain_prefix": "smtp"
+            },
+            {
+                "subdomain": "admin.google.com",
+                "ip": "216.58.215.46",
+                "subdomain_prefix": "admin"
+            },
+            {
+                "subdomain": "blog.google.com",
+                "ip": "216.58.214.169",
+                "subdomain_prefix": "blog"
+            },
+            {
+                "subdomain": "cloud.google.com",
+                "ip": "172.217.20.174",
+                "subdomain_prefix": "cloud"
+            },
+            {
+                "subdomain": "mobile.google.com",
+                "ip": "142.250.178.139",
+                "subdomain_prefix": "mobile"
+            },
+            {
+                "subdomain": "api.google.com",
+                "ip": "64.233.184.103",
+                "subdomain_prefix": "api"
+            },
+            {
+                "subdomain": "docs.google.com",
+                "ip": "172.217.20.174",
+                "subdomain_prefix": "docs"
+            },
+            {
+                "subdomain": "support.google.com",
+                "ip": "172.217.20.174",
+                "subdomain_prefix": "support"
+            },
+            {
+                "subdomain": "help.google.com",
+                "ip": "142.250.179.110",
+                "subdomain_prefix": "help"
+            },
+            {
+                "subdomain": "images.google.com",
+                "ip": "142.250.179.78",
+                "subdomain_prefix": "images"
+            }
+        ],
+        "tested": 35,
+        "timestamp": "2025-11-30T19:00:03.717115"
+    }
+}

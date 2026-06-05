@@ -1,0 +1,28 @@
+{
+    "scan_type": "web_analysis",
+    "timestamp": "2025-11-30T18:54:59.986340",
+    "user": "test1",
+    "data": {
+        "technologies": [
+            "Nginx",
+            "PHP",
+            "jQuery"
+        ],
+        "security_headers": {
+            "score": 3,
+            "percentage": 100,
+            "present": {
+                "Content-Security-Policy": "require-trusted-types-for 'script'",
+                "X-Frame-Options": "SAMEORIGIN",
+                "Strict-Transport-Security": "max-age=31536000"
+            },
+            "missing": []
+        },
+        "ssl": {
+            "valid": true,
+            "issuer": "Let's Encrypt"
+        },
+        "target": "https://youtube.com",
+        "url": "https://youtube.com"
+    }
+}

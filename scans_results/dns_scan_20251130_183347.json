@@ -1,0 +1,19 @@
+{
+    "scan_type": "dns_scan",
+    "timestamp": "2025-11-30T18:33:47.403319",
+    "user": "test1",
+    "data": {
+        "domain": "google.com",
+        "records": {
+            "A": [],
+            "AAAA": [],
+            "MX": [],
+            "NS": [],
+            "TXT": [],
+            "SOA": []
+        },
+        "timestamp": "2025-11-30T18:33:47.046203",
+        "scan_mode": "DNS Lookup",
+        "query": "google.com"
+    }
+}

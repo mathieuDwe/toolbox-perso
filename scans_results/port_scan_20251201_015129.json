@@ -1,0 +1,26 @@
+{
+    "scan_type": "port_scan",
+    "timestamp": "2025-12-01T01:51:29.870694",
+    "user": "test1",
+    "data": {
+        "target": "google.com",
+        "scan_type": "common",
+        "total_ports_scanned": 17,
+        "open_ports": 2,
+        "ports": [
+            {
+                "port": 80,
+                "state": "open",
+                "service": "HTTP",
+                "banner": "HTTP/1.0 200 OK\r\nContent-Type: text/html; charset=ISO-8859-1\r\nContent-Security-Policy-Report-Only: o"
+            },
+            {
+                "port": 443,
+                "state": "open",
+                "service": "HTTPS",
+                "banner": null
+            }
+        ],
+        "timestamp": "2025-12-01T01:51:29.870604"
+    }
+}

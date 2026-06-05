@@ -1,0 +1,71 @@
+{
+    "scan_type": "wifi_analyzer",
+    "timestamp": "2025-12-15T08:55:36.021218",
+    "user": "admin",
+    "data": {
+        "scan_type": "WiFi Analyzer",
+        "timestamp": "2025-12-15 08:55:36",
+        "networks": [
+            {
+                "ssid": ".M-All-ee",
+                "signal": -41,
+                "channel": 2412000,
+                "band": "5 GHz"
+            },
+            {
+                "ssid": "ISI_Permanents",
+                "signal": -41,
+                "channel": 2412000,
+                "band": "5 GHz"
+            },
+            {
+                "ssid": ".B-All-ee",
+                "signal": -41,
+                "channel": 2412000,
+                "band": "5 GHz"
+            },
+            {
+                "ssid": ".M-All-ee",
+                "signal": -41,
+                "channel": 2412000,
+                "band": "5 GHz"
+            },
+            {
+                "ssid": ".F-All-ee",
+                "signal": -42,
+                "channel": 2412000,
+                "band": "5 GHz"
+            },
+            {
+                "ssid": ".F-All-ee",
+                "signal": -48,
+                "channel": 5220000,
+                "band": "5 GHz"
+            },
+            {
+                "ssid": "ISI_Permanents",
+                "signal": -48,
+                "channel": 5220000,
+                "band": "5 GHz"
+            },
+            {
+                "ssid": ".B-All-ee",
+                "signal": -48,
+                "channel": 5220000,
+                "band": "5 GHz"
+            },
+            {
+                "ssid": ".M-All-ee",
+                "signal": -52,
+                "channel": 5220000,
+                "band": "5 GHz"
+            },
+            {
+                "ssid": ".M-All-ee",
+                "signal": -52,
+                "channel": 5220000,
+                "band": "5 GHz"
+            }
+        ]
+    }
+}

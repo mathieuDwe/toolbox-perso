@@ -1,0 +1,13 @@
+{
+    "scan_type": "port_scan",
+    "timestamp": "2025-12-01T02:28:49.349749",
+    "user": "admin",
+    "data": {
+        "target": "192.168.1.10",
+        "scan_type": "common",
+        "total_ports_scanned": 17,
+        "open_ports": 0,
+        "ports": [],
+        "timestamp": "2025-12-01T02:28:49.349661"
+    }
+}

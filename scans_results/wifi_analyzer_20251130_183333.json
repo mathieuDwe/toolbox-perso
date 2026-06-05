@@ -1,0 +1,71 @@
+{
+    "scan_type": "wifi_analyzer",
+    "timestamp": "2025-11-30T18:33:33.354983",
+    "user": "test1",
+    "data": {
+        "scan_type": "WiFi Analyzer",
+        "timestamp": "2025-11-30 18:33:33",
+        "networks": [
+            {
+                "ssid": "SFR_F978_5GHZ",
+                "signal": -47,
+                "channel": 5500000,
+                "band": "5 GHz"
+            },
+            {
+                "ssid": "SFR_F978",
+                "signal": -48,
+                "channel": 5500000,
+                "band": "5 GHz"
+            },
+            {
+                "ssid": "SFR_F978",
+                "signal": -48,
+                "channel": 5500000,
+                "band": "5 GHz"
+            },
+            {
+                "ssid": "SFR_F978",
+                "signal": -49,
+                "channel": 2462000,
+                "band": "5 GHz"
+            },
+            {
+                "ssid": "SFR_F978",
+                "signal": -49,
+                "channel": 2462000,
+                "band": "5 GHz"
+            },
+            {
+                "ssid": "DIRECT-09-HP DeskJet 2800 series",
+                "signal": -55,
+                "channel": 2462000,
+                "band": "5 GHz"
+            },
+            {
+                "ssid": "Freebox-Batman",
+                "signal": -65,
+                "channel": 2437000,
+                "band": "5 GHz"
+            },
+            {
+                "ssid": "Freebox-Batman",
+                "signal": -71,
+                "channel": 5180000,
+                "band": "5 GHz"
+            },
+            {
+                "ssid": "SFR_46E8",
+                "signal": -77,
+                "channel": 2412000,
+                "band": "5 GHz"
+            },
+            {
+                "ssid": "Bbox-B2C616F2",
+                "signal": -79,
+                "channel": 5500000,
+                "band": "5 GHz"
+            }
+        ]
+    }
+}
