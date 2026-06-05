@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Connexion - Pentool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding-top: 100px;
+        }
+        h2 {
+            font-size: 32px;
+            color: #333;
+        }
+        form {
+            margin-top: 30px;
+        }
+        input[type="text"],
+        input[type="password"] {
+            padding: 10px;
+            margin: 10px;
+            width: 250px;
+            font-size: 16px;
+        }
+        input[type="submit"] {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h2>Connexion à Pentool</h2>
+    <form method="post">
+        <input type="text" name="username" placeholder="Nom d'utilisateur" required><br>
+        <input type="password" name="password" placeholder="Mot de passe" required><br>
+        <input type="submit" value="Se connecter">
+    </form>
+</body>
+</html>

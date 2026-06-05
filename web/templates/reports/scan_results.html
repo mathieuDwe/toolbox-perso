@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résultats - {{ scan_type }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #1e3c72;
+            font-size: 1.5rem;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: #007BFF;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover {
+            background: #0056b3;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .results-header {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .results-header h2 {
+            color: #1e3c72;
+            margin-bottom: 1rem;
+        }
+
+        .results-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .meta-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .meta-label {
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .meta-value {
+            color: #333;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .results-section {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .results-section h3 {
+            color: #1e3c72;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #1e3c72;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .status-open {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-closed {
+            background: #dc3545;
+            color: white;
+        }
+
+        .status-up {
+            background: #28a745;
+            color: white;
+        }
+
+        .severity-critical {
+            background: #dc3545;
+            color: white;
+        }
+
+        .severity-high {
+            background: #fd7e14;
+            color: white;
+        }
+
+        .severity-medium {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .severity-low {
+            background: #28a745;
+            color: white;
+        }
+
+        .json-viewer {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #007BFF;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .vuln-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid;
+        }
+
+        .vuln-card.critical { border-left-color: #dc3545; }
+        .vuln-card.high { border-left-color: #fd7e14; }
+        .vuln-card.medium { border-left-color: #ffc107; }
+        .vuln-card.low { border-left-color: #28a745; }
+
+        .vuln-card h4 {
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .vuln-card p {
+            color: #666;
+            margin: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 {{ scan_type }} - Résultats</h1>
+        <div class="nav-buttons">
+            <a href="{{ url_for('web_auth.dashboard') }}" class="nav-btn">🏠 Dashboard</a>
+            <a href="{{ url_for('web_scans.toolbox') }}" class="nav-btn">🔧 Toolbox</a>
+            <a href="{{ url_for('web_auth.logout') }}" class="nav-btn" style="background: #dc3545;">🚪 Déconnexion</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Results Header -->
+        <div class="results-header">
+            <h2>{{ scan_type }}</h2>
+            <div class="results-meta">
+                {% if results.network %}
+                <div class="meta-item">
+                    <div class="meta-label">Réseau scanné</div>
+                    <div class="meta-value">{{ results.network }}</div>
+                </div>
+                {% endif %}
+                
+                {% if results.target %}
+                <div class="meta-item">
+                    <div class="meta-label">Cible</div>
+                    <div class="meta-value">{{ results.target }}</div>
+                </div>
+                {% endif %}
+
+                {% if results.url %}
+                <div class="meta-item">
+                    <div class="meta-label">URL</div>
+                    <div class="meta-value">{{ results.url }}</div>
+                </div>
+                {% endif %}
+
+                {% if results.domain %}
+                <div class="meta-item">
+                    <div class="meta-label">Domaine</div>
+                    <div class="meta-value">{{ results.domain }}</div>
+                </div>
+                {% endif %}
+                
+                {% if results.timestamp %}
+                <div class="meta-item">
+                    <div class="meta-label">Date</div>
+                    <div class="meta-value">{{ results.timestamp[:19] }}</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Network Scan Results -->
+        {% if results.hosts %}
+        <div class="results-section">
+            <h3>🌐 Hôtes actifs ({{ results.active_hosts }})</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Adresse IP</th>
+                        <th>Hostname</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for host in results.hosts %}
+                    <tr>
+                        <td>{{ host.ip }}</td>
+                        <td>{{ host.hostname }}</td>
+                        <td><span class="status-badge status-up">{{ host.status }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- Port Scan Results -->
+        {% if results.ports %}
+        <div class="results-section">
+            <h3>🔌 Ports ouverts ({{ results.open_ports }})</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Port</th>
+                        <th>Service</th>
+                        <th>Statut</th>
+                        <th>Bannière</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for port in results.ports %}
+                    <tr>
+                        <td><strong>{{ port.port }}</strong></td>
+                        <td>{{ port.service }}</td>
+                        <td><span class="status-badge status-open">{{ port.state }}</span></td>
+                        <td>{{ port.banner[:50] if port.banner else 'N/A' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- DNS Records -->
+        {% if results.records or results.dns_records %}
+        <div class="results-section">
+            <h3>🌐 Enregistrements DNS</h3>
+            {% set dns_data = results.records or results.dns_records %}
+            {% for record_type, values in dns_data.items() %}
+                {% if values %}
+                <h4 style="color: #667eea; margin: 1rem 0 0.5rem 0;">
+                    <span class="status-badge" style="background: #667eea; color: white; padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.85rem;">
+                        {{ record_type }}
+                    </span>
+                    ({{ values|length }} enregistrement{% if values|length > 1 %}s{% endif %})
+                </h4>
+                <ul style="margin-left: 2rem; line-height: 1.8;">
+                    {% for value in values %}
+                    <li style="padding: 0.3rem 0;">{{ value }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Reverse DNS Result -->
+        {% if results.hostname %}
+        <div class="results-section">
+            <h3>🔄 Reverse DNS</h3>
+            <table class="data-table">
+                <tr>
+                    <th>Adresse IP</th>
+                    <td>{{ results.ip }}</td>
+                </tr>
+                <tr>
+                    <th>Hostname</th>
+                    <td><strong>{{ results.hostname }}</strong></td>
+                </tr>
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- All IPs -->
+        {% if results.all_ips %}
+        <div class="results-section">
+            <h3>📊 Toutes les adresses IP</h3>
+            <p><strong>Domaine:</strong> {{ results.all_ips.domain }}</p>
+            <p><strong>Nombre d'IPs:</strong> {{ results.all_ips.count }}</p>
+            <ul style="margin-left: 2rem;">
+                {% for ip in results.all_ips.ips %}
+                <li>{{ ip }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- WHOIS Information -->
+        {% if results.whois and not results.whois.error %}
+        <div class="results-section">
+            <h3>📋 Informations WHOIS</h3>
+            <table class="data-table">
+                {% if results.whois.registrar %}
+                <tr>
+                    <th>Registrar</th>
+                    <td>{{ results.whois.registrar }}</td>
+                </tr>
+                {% endif %}
+                {% if results.whois.creation_date %}
+                <tr>
+                    <th>Date de création</th>
+                    <td>{{ results.whois.creation_date }}</td>
+                </tr>
+                {% endif %}
+                {% if results.whois.expiration_date %}
+                <tr>
+                    <th>Date d'expiration</th>
+                    <td>{{ results.whois.expiration_date }}</td>
+                </tr>
+                {% endif %}
+                {% if results.whois.status %}
+                <tr>
+                    <th>Statut</th>
+                    <td>{{ results.whois.status }}</td>
+                </tr>
+                {% endif %}
+                {% if results.whois.name_servers %}
+                <tr>
+                    <th>Name Servers</th>
+                    <td>
+                        <ul style="margin: 0;">
+                            {% for ns in results.whois.name_servers %}
+                            <li>{{ ns }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- Open Ports (from advanced scan) -->
+        {% if results.open_ports %}
+        <div class="results-section">
+            <h3>🔌 Ports ouverts détectés</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Port</th>
+                        <th>Service</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for port in results.open_ports %}
+                    <tr>
+                        <td><strong>{{ port.port }}</strong></td>
+                        <td>{{ port.service }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- Subdomains -->
+        {% if results.found is defined %}
+        <div class="results-section">
+            <h3>🔎 Sous-domaines trouvés ({{ results.found|length }})</h3>
+            {% if results.found %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Sous-domaine</th>
+                        <th>Adresse IP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subdomain in results.found %}
+                    <tr>
+                        <td>{{ subdomain.subdomain }}</td>
+                        <td>{{ subdomain.ip }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">❌</div>
+                <p>Aucun sous-domaine trouvé</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Vulnerabilities -->
+        {% if results.vulnerabilities %}
+        <div class="results-section">
+            <h3>🛡️ Vulnérabilités détectées ({{ results.vulnerabilities|length }})</h3>
+            {% for vuln in results.vulnerabilities %}
+            <div class="vuln-card {{ vuln.severity.lower() }}">
+                <span class="status-badge severity-{{ vuln.severity.lower() }}">{{ vuln.severity }}</span>
+                <h4>{{ vuln.type }}</h4>
+                <p><strong>Description:</strong> {{ vuln.description }}</p>
+                {% if vuln.recommendation %}
+                <p><strong>Recommandation:</strong> {{ vuln.recommendation }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Web Analysis -->
+        {% if results.technologies %}
+        <div class="results-section">
+            <h3>💻 Technologies détectées</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                {% for tech in results.technologies %}
+                <span class="status-badge" style="background: #667eea; color: white;">{{ tech }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if results.security_headers %}
+        <div class="results-section">
+            <h3>🔒 Headers de sécurité</h3>
+            <p><strong>Score:</strong> {{ results.security_headers.score }} ({{ results.security_headers.percentage }}%)</p>
+            
+            {% if results.security_headers.present %}
+            <h4 style="color: #28a745; margin-top: 1rem;">✅ Présents</h4>
+            <ul style="margin-left: 2rem;">
+                {% for header, value in results.security_headers.present.items() %}
+                <li><strong>{{ header }}:</strong> {{ value[:80] }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            
+            {% if results.security_headers.missing %}
+            <h4 style="color: #dc3545; margin-top: 1rem;">❌ Manquants</h4>
+            <ul style="margin-left: 2rem;">
+                {% for header in results.security_headers.missing %}
+                <li>{{ header }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Raw JSON -->
+        <div class="results-section">
+            <h3>📄 Données brutes (JSON)</h3>
+            <div class="json-viewer">{{ results | tojson(indent=2) }}</div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="{{ url_for('web_scans.toolbox') }}" class="btn btn-secondary">← Nouveau scan</a>
+            <a href="{{ url_for('web_reports.scan_history') }}" class="btn btn-primary">📜 Voir l'historique</a>
+            <button onclick="downloadJSON()" class="btn btn-success">💾 Télécharger JSON</button>
+        </div>
+    </div>
+
+    <script>
+        function downloadJSON() {
+            const data = {{ results | tojson | safe }};
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const url = window.URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = '{{ filename or "scan_results.json" }}';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

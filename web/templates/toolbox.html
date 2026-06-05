@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toolbox - Pentool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #1e3c72;
+            font-size: 1.5rem;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: #007BFF;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover {
+            background: #0056b3;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .section-title {
+            color: white;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+
+        .tool-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .tool-icon.blue { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .tool-icon.green { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .tool-icon.orange { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .tool-icon.red { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .tool-icon.purple { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+
+        .tool-card h3 {
+            color: #1e3c72;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-card p {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .tool-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+
+        .badge-basic { background: #28a745; color: white; }
+        .badge-advanced { background: #ffc107; color: #333; }
+        .badge-expert { background: #dc3545; color: white; }
+
+        .quick-actions {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .quick-actions h2 {
+            color: #1e3c72;
+            margin-bottom: 1rem;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔧 Pentool Toolbox</h1>
+        <div class="nav-buttons">
+            <a href="{{ url_for('web_auth.dashboard') }}" class="nav-btn">🏠 Dashboard</a>
+            <a href="{{ url_for('web_auth.logout') }}" class="nav-btn" style="background: #dc3545;">🚪 Déconnexion</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h2>⚡ Actions rapides</h2>
+            <div class="action-buttons">
+                <a href="{{ url_for('web_reports.scan_history') }}" class="action-btn">
+                    📜 Voir l'historique des scan
+                </a>
+                <a href="#" onclick="showReportModal()" class="action-btn">
+                    📄 Générer un rapport
+                </a>
+                
+            </div>
+        </div>
+
+        <!-- Reconnaissance Tools -->
+        <h2 class="section-title">🔍 Reconnaissance</h2>
+        <div class="tools-grid">
+            <a href="{{ url_for('web_scans.dns_scan') }}" class="tool-card">
+                <div class="tool-icon blue">🌐</div>
+                <h3>DNS Reconnaissance</h3>
+                <p>Effectue une reconnaissance DNS complète : enregistrements A, MX, NS, TXT, SOA, reverse DNS et plus encore.</p>
+                <span class="tool-badge badge-basic">Basique</span>
+            </a>
+
+            <a href="{{ url_for('web_scans.web_analysis') }}" class="tool-card">
+                <div class="tool-icon green">🌍</div>
+                <h3>Web Reconnaissance</h3>
+                <p>Analyse complète d'un site web : technologies, CMS, headers de sécurité, SSL/TLS, extraction d'emails et liens.</p>
+                <span class="tool-badge badge-basic">Basique</span>
+            </a>
+
+            <a href="{{ url_for('web_scans.subdomain_scan') }}" class="tool-card">
+                <div class="tool-icon orange">🔎</div>
+                <h3>Subdomain Enumeration</h3>
+                <p>Énumération de sous-domaines avec support multi-threadé et wordlist personnalisable.</p>
+                <span class="tool-badge badge-advanced">Avancé</span>
+            </a>
+        </div>
+
+        <!-- Scanning Tools -->
+        <h2 class="section-title">🎯 Scanning</h2>
+        <div class="tools-grid">
+            <a href="{{ url_for('web_scans.network_scan') }}" class="tool-card">
+                <div class="tool-icon blue">🌐</div>
+                <h3>Network Scanner</h3>
+                <p>Scan d'un réseau complet pour identifier les hôtes actifs avec ping sweep et résolution de noms.</p>
+                <span class="tool-badge badge-basic">Basique</span>
+            </a>
+
+            <a href="{{ url_for('web_scans.port_scan') }}" class="tool-card">
+                <div class="tool-icon purple">🔌</div>
+                <h3>Port Scanner</h3>
+                <p>Scan de ports avec détection de services : scan rapide, complet ou personnalisé avec banner grabbing.</p>
+                <span class="tool-badge badge-basic">Basique</span>
+            </a>
+
+            <a href="{{ url_for('web_scans.vulnerability_scan') }}" class="tool-card">
+                <div class="tool-icon red">🛡️</div>
+                <h3>Vulnerability Scanner</h3>
+                <p>Détection automatique de vulnérabilités web : SQL injection, XSS, directory traversal, open redirect.</p>
+                <span class="tool-badge badge-advanced">Avancé</span>
+            </a>
+            <a href="{{ url_for('web_scans.fuzzing') }}" class="tool-card">
+                <div class="tool-icon blue">🌐</div>
+                <h3>fuzzing</h3>
+                <p>Scan d'un domaine pour trouver les differents directory.</p>
+                <span class="tool-badge badge-basic">Basique</span>
+            </a>
+        </div>
+
+        <!-- Exploitation Tools -->
+        <h2 class="section-title">💥 Exploitation</h2>
+        <div class="tools-grid">
+            <a href="{{ url_for('web_scans.brute_force') }}" class="tool-card">
+                <div class="tool-icon red">🔓</div>
+                <h3>Brute Force</h3>
+                <p>Attaque par force brute sur SSH, FTP et formulaires HTTP avec support de wordlist personnalisée.</p>
+                <span class="tool-badge badge-expert">Expert</span>
+            </a>
+
+            <div class="tool-card" style="opacity: 0.6; cursor: not-allowed;">
+                <div class="tool-icon purple">🔐</div>
+                <h3>Password Cracker</h3>
+                <p>Craquage de mots de passe hashés (MD5, SHA1, SHA256) avec dictionnaire. <br><em>(Bientôt disponible)</em></p>
+                <span class="tool-badge badge-expert">Expert</span>
+            </div>
+        </div>
+
+        <!-- Post-Exploitation Tools -->
+        <h2 class="section-title">🎪 Post-Exploitation</h2>
+        <div class="tools-grid">
+            <div class="tool-card" style="opacity: 0.6; cursor: not-allowed;">
+                <div class="tool-icon blue">💻</div>
+                <h3>Remote Shell</h3>
+                <p>Gestion de shell distant via SSH avec upload/download de fichiers. <br><em>(Bientôt disponible)</em></p>
+                <span class="tool-badge badge-expert">Expert</span>
+            </div>
+
+            <div class="tool-card" style="opacity: 0.6; cursor: not-allowed;">
+                <div class="tool-icon green">📊</div>
+                <h3>System Enumeration</h3>
+                <p>Énumération complète du système compromis : processus, services, utilisateurs. <br><em>(Bientôt disponible)</em></p>
+                <span class="tool-badge badge-expert">Expert</span>
+            </div>
+
+            <div class="tool-card" style="opacity: 0.6; cursor: not-allowed;">
+                <div class="tool-icon red">⬆️</div>
+                <h3>Privilege Escalation</h3>
+                <p>Recherche automatique d'opportunités d'élévation de privilèges. <br><em>(Bientôt disponible)</em></p>
+                <span class="tool-badge badge-expert">Expert</span>
+            </div>
+            <div class="tool-card" style="opacity: 0.6; cursor: not-allowed;">
+                <div class="tool-icon red">⬆️</div>
+                <h3>Forensique</h3>
+                <p>module de Forensique <br><em>(Bientôt disponible)</em></p>
+                <span class="tool-badge badge-expert">Expert</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showReportModal() {
+            alert("Fonctionnalité de génération de rapport disponible dans l'historique des scans.");
+            window.location.href = "{{ url_for('web_reports.scan_history') }}";
+        }
+    </script>
+</body>
+</html>

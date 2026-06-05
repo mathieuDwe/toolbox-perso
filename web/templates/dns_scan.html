@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNS Reconnaissance - Pentool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #1e3c72;
+            font-size: 1.5rem;
+        }
+
+        .nav-btn {
+            background: #007BFF;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover {
+            background: #0056b3;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .scan-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .scan-header {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            padding: 2rem;
+            text-align: center;
+            color: white;
+        }
+
+        .scan-header h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .scan-header p {
+            opacity: 0.9;
+        }
+
+        .scan-body {
+            padding: 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #dee2e6;
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .tab:hover {
+            color: #17a2b8;
+        }
+
+        .tab.active {
+            color: #17a2b8;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #17a2b8;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #17a2b8;
+        }
+
+        .form-help {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .checkbox-label:hover {
+            background: #f8f9fa;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 5px;
+        }
+
+        .info-box h3 {
+            color: #0c5460;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .info-box ul {
+            margin-left: 1.5rem;
+            color: #0c5460;
+        }
+
+        .info-box li {
+            margin: 0.3rem 0;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 5px;
+        }
+
+        .warning-box h3 {
+            color: #856404;
+            margin-bottom: 0.5rem;
+        }
+
+        .record-type-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin: 0.2rem;
+            color: white;
+        }
+
+        .badge-a { background: #007BFF; }
+        .badge-aaaa { background: #6610f2; }
+        .badge-mx { background: #28a745; }
+        .badge-ns { background: #fd7e14; }
+        .badge-txt { background: #17a2b8; }
+        .badge-soa { background: #e83e8c; }
+        .badge-cname { background: #6c757d; }
+
+        .example-box {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+        }
+
+        .example-box h4 {
+            color: #17a2b8;
+            margin-bottom: 0.5rem;
+        }
+
+        .example-box code {
+            background: #e9ecef;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #17a2b8;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #17a2b8;
+        }
+
+        .feature-card h4 {
+            color: #17a2b8;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feature-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab {
+                border-bottom: 1px solid #dee2e6;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌐 DNS Reconnaissance</h1>
+            <a href="{{ url_for('web_auth.dashboard') }}" class="nav-btn">🏠 Dashboard</a>
+            <a href="{{ url_for('web_scans.toolbox') }}" class="nav-btn">🔧 Toolbox</a>
+            <a href="{{ url_for('web_auth.logout') }}" class="nav-btn" style="background: #dc3545;">🚪 Déconnexion</a>
+    </div>
+
+    <div class="container">
+        <div class="scan-card">
+            <div class="scan-header">
+                <h2>Reconnaissance DNS Complète</h2>
+                <p>Collecte d'informations DNS avancée et reverse lookup</p>
+            </div>
+
+            <div class="scan-body">
+                <div class="info-box">
+                    <h3>ℹ️ Fonctionnalités DNS</h3>
+                    <ul>
+                        <li><strong>DNS Lookup</strong> : Recherche tous les enregistrements DNS (A, AAAA, MX, NS, TXT, SOA, CNAME)</li>
+                        <li><strong>Reverse DNS</strong> : Trouve le nom de domaine associé à une IP</li>
+                        <li><strong>Multiple IPs</strong> : Liste toutes les IPs associées à un domaine</li>
+                        <li><strong>WHOIS</strong> : Informations sur le propriétaire du domaine (Linux/Unix seulement)</li>
+                    </ul>
+                </div>
+
+                <!-- Tabs -->
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('dns-lookup')">
+                        🔍 DNS Lookup
+                    </button>
+                    <button class="tab" onclick="switchTab('reverse-dns')">
+                        🔄 Reverse DNS
+                    </button>
+                    <button class="tab" onclick="switchTab('advanced')">
+                        ⚙️ Avancé
+                    </button>
+                </div>
+
+                <!-- Tab 1: DNS Lookup -->
+                <div id="dns-lookup" class="tab-content active">
+                    <form method="post" id="dnsLookupForm">
+                        <input type="hidden" name="scan_mode" value="dns_lookup">
+                        
+                        <div class="form-group">
+                            <label for="domain">🌐 Nom de Domaine *</label>
+                            <input 
+                                type="text" 
+                                id="domain" 
+                                name="domain" 
+                                placeholder="example.com" 
+                                required
+                            >
+                            <div class="form-help">Entrez un nom de domaine (sans http:// ou www si non nécessaire)</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>📋 Types d'enregistrements à rechercher</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="record_types" value="A" checked>
+                                    <span>A (IPv4)</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="record_types" value="AAAA" checked>
+                                    <span>AAAA (IPv6)</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="record_types" value="MX" checked>
+                                    <span>MX (Mail)</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="record_types" value="NS" checked>
+                                    <span>NS (Name Server)</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="record_types" value="TXT" checked>
+                                    <span>TXT (Texte)</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="record_types" value="SOA" checked>
+                                    <span>SOA (Authority)</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="record_types" value="CNAME">
+                                    <span>CNAME (Alias)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="example-box">
+                            <h4>📝 Exemples de domaines</h4>
+                            <p>
+                                <code>google.com</code>
+                                <code>github.com</code>
+                                <code>cloudflare.com</code>
+                            </p>
+                        </div>
+
+                        <button type="submit" class="btn-submit">
+                            🚀 Lancer la Reconnaissance DNS
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Tab 2: Reverse DNS -->
+                <div id="reverse-dns" class="tab-content">
+                    <form method="post" id="reverseDnsForm">
+                        <input type="hidden" name="scan_mode" value="reverse_dns">
+                        
+                        <div class="form-group">
+                            <label for="ip_address">🔢 Adresse IP *</label>
+                            <input 
+                                type="text" 
+                                id="ip_address" 
+                                name="ip_address" 
+                                placeholder="8.8.8.8" 
+                                required
+                                pattern="^(\d{1,3}\.){3}\d{1,3}$"
+                            >
+                            <div class="form-help">Entrez une adresse IPv4 pour trouver le domaine associé</div>
+                        </div>
+
+                        <div class="example-box">
+                            <h4>📝 Exemples d'adresses IP</h4>
+                            <p>
+                                <code>8.8.8.8</code> (Google DNS)
+                                <code>1.1.1.1</code> (Cloudflare DNS)
+                                <code>208.67.222.222</code> (OpenDNS)
+                            </p>
+                        </div>
+
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <h4>🔍 Recherche Inversée</h4>
+                                <p>Trouve le nom de domaine (PTR record) associé à une adresse IP</p>
+                            </div>
+                            <div class="feature-card">
+                                <h4>🏢 Identification</h4>
+                                <p>Identifie le propriétaire ou l'organisation derrière l'IP</p>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit">
+                            🔄 Lancer le Reverse DNS
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Tab 3: Advanced -->
+                <div id="advanced" class="tab-content">
+                    <form method="post" id="advancedForm">
+                        <input type="hidden" name="scan_mode" value="advanced">
+                        
+                        <div class="form-group">
+                            <label for="domain_advanced">🌐 Nom de Domaine *</label>
+                            <input 
+                                type="text" 
+                                id="domain_advanced" 
+                                name="domain" 
+                                placeholder="example.com" 
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label>🔧 Options Avancées</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="get_all_ips" value="1" checked>
+                                    <span>📊 Toutes les IPs</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="whois_lookup" value="1">
+                                    <span>📋 WHOIS Lookup</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="subdomain_check" value="1">
+                                    <span>🔎 Vérifier sous-domaines communs</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="port_check" value="1">
+                                    <span>🔌 Check ports communs</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="warning-box">
+                            <h3>⚠️ Note</h3>
+                            <p>Les options avancées peuvent prendre plus de temps. WHOIS n'est pas disponible sur Windows nativement.</p>
+                        </div>
+
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <h4>📊 Analyse Complète</h4>
+                                <p>Combine DNS, WHOIS et vérifications de ports pour une vue d'ensemble</p>
+                            </div>
+                            <div class="feature-card">
+                                <h4>🌍 Multi-IP</h4>
+                                <p>Détecte tous les serveurs hébergeant le domaine (CDN, load balancers)</p>
+                            </div>
+                            <div class="feature-card">
+                                <h4>🔍 Sous-domaines</h4>
+                                <p>Vérifie l'existence de sous-domaines communs (www, mail, ftp, etc.)</p>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit">
+                            🚀 Lancer l'Analyse Avancée
+                        </button>
+                    </form>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p><strong>Reconnaissance en cours...</strong></p>
+                    <p id="loadingMessage">Collecte des informations DNS...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Cards -->
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>🎯 Enregistrement A</h4>
+                <p>Adresse IPv4 du domaine</p>
+            </div>
+            <div class="feature-card">
+                <h4>📧 Enregistrement MX</h4>
+                <p>Serveurs de messagerie</p>
+            </div>
+            <div class="feature-card">
+                <h4>🔐 Enregistrement TXT</h4>
+                <p>SPF, DKIM, vérifications diverses</p>
+            </div>
+            <div class="feature-card">
+                <h4>🌐 Enregistrement NS</h4>
+                <p>Serveurs de noms autoritaires</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Switch between tabs
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Form submission handlers
+        const forms = ['dnsLookupForm', 'reverseDnsForm', 'advancedForm'];
+        
+        forms.forEach(formId => {
+            const form = document.getElementById(formId);
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    // Show loading
+                    document.getElementById('loading').style.display = 'block';
+                    
+                    // Disable submit buttons
+                    document.querySelectorAll('.btn-submit').forEach(btn => {
+                        btn.disabled = true;
+                        btn.textContent = '⏳ Analyse en cours...';
+                    });
+                    
+                    // Update loading message based on form
+                    const mode = this.querySelector('[name="scan_mode"]').value;
+                    let message = 'Collecte des informations DNS...';
+                    
+                    if (mode === 'reverse_dns') {
+                        message = 'Recherche du domaine associé à l\'IP...';
+                    } else if (mode === 'advanced') {
+                        message = 'Analyse approfondie en cours. Cela peut prendre quelques minutes...';
+                    }
+                    
+                    document.getElementById('loadingMessage').textContent = message;
+                });
+            }
+        });
+
+        // Validation du domaine
+        const domainInputs = ['domain', 'domain_advanced'];
+        domainInputs.forEach(inputId => {
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.addEventListener('input', function(e) {
+                    const value = e.target.value;
+                    const domainPattern = /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+                    
+                    if (value && !domainPattern.test(value)) {
+                        e.target.setCustomValidity('Entrez un nom de domaine valide (ex: example.com)');
+                    } else {
+                        e.target.setCustomValidity('');
+                    }
+                });
+            }
+        });
+
+        // Validation de l'IP
+        const ipInput = document.getElementById('ip_address');
+        if (ipInput) {
+            ipInput.addEventListener('input', function(e) {
+                const value = e.target.value;
+                const ipPattern = /^(\d{1,3}\.){3}\d{1,3}$/;
+                
+                if (value && ipPattern.test(value)) {
+                    // Vérifier que chaque octet est entre 0 et 255
+                    const octets = value.split('.');
+                    const valid = octets.every(octet => {
+                        const num = parseInt(octet);
+                        return num >= 0 && num <= 255;
+                    });
+                    
+                    if (!valid) {
+                        e.target.setCustomValidity('Chaque nombre doit être entre 0 et 255');
+                    } else {
+                        e.target.setCustomValidity('');
+                    }
+                } else if (value) {
+                    e.target.setCustomValidity('Format d\'IP invalide (ex: 192.168.1.1)');
+                }
+            });
+        }
+
+        // Au moins un type d'enregistrement doit être sélectionné
+        const dnsForm = document.getElementById('dnsLookupForm');
+        if (dnsForm) {
+            dnsForm.addEventListener('submit', function(e) {
+                const checkboxes = this.querySelectorAll('input[name="record_types"]:checked');
+                if (checkboxes.length === 0) {
+                    e.preventDefault();
+                    alert('Veuillez sélectionner au moins un type d\'enregistrement DNS à rechercher.');
+                }
+            });
+        }
+    </script>
+</body>
+</html

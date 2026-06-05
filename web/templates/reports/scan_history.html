@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historique des Scans - Pentool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #1e3c72;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: #007BFF;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-btn:hover {
+            background: #0056b3;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .stat-icon.blue { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .stat-icon.green { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .stat-icon.orange { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .stat-icon.purple { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .stat-icon.yellow { background: linear-gradient(135deg, #ddb42c 0%, #ecc608 100%); }
+        .stat-icon.pink { background: linear-gradient(135deg, #ddb42c 0%, #ec08af 100%); }
+
+        .stat-info h3 {
+            font-size: 1.8rem;
+            color: #1e3c72;
+        }
+
+        .stat-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Filters */
+        .filters {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .filters-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 0.6rem;
+            border: 2px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-filter {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+
+        .btn-filter:hover {
+            background: #5568d3;
+        }
+
+        /* Action Bar */
+        .action-bar {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-bulk {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+
+        .btn-bulk:hover {
+            background: #218838;
+        }
+
+        .btn-bulk.danger {
+            background: #dc3545;
+        }
+
+        .btn-bulk.danger:hover {
+            background: #c82333;
+        }
+
+        .selection-info {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Scans Table */
+        .scans-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .scans-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .scans-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .scans-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .scans-table th input[type="checkbox"] {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .scans-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .scans-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .scan-type-badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .badge-network { background: #007BFF; }
+        .badge-fuzzing { background: #5a1414; }
+        .badge-port { background: #6610f2; }
+        .badge-dns { background: #17a2b8; }
+        .badge-web { background: #28a745; }
+        .badge-subdomain { background: #fd7e14; }
+        .badge-vulnerability { background: #dc3545; }
+        .badge-brute { background: #e83e8c; }
+        .badge-default { background: #6c757d; }
+        .badge-wifi { background: linear-gradient(135deg, #ddb42c 0%, #ec08af 100%); }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-action {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .btn-view {
+            background: #007BFF;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: #0056b3;
+        }
+
+        .btn-download {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-download:hover {
+            background: #218838;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        .file-size {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+        }
+
+        .close {
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            transition: transform 0.3s;
+        }
+
+        .close:hover {
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-body p {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .scans-table {
+                font-size: 0.85rem;
+            }
+
+            .scans-table th,
+            .scans-table td {
+                padding: 0.7rem 0.5rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📜 Historique des Scans</h1>
+        <div class="nav-buttons">
+       <a href="{{ url_for('web_auth.dashboard') }}" class="nav-btn">🏠 Dashboard</a>
+            <a href="{{ url_for('web_scans.toolbox') }}" class="nav-btn">🔧 Toolbox</a>
+            <a href="{{ url_for('web_auth.logout') }}" class="nav-btn" style="background: #dc3545;">🚪 Déconnexion</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon blue">📊</div>
+                <div class="stat-info">
+                    <h3 id="totalScans">{{ scans|length }}</h3>
+                    <p>Scans totaux</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green">🎯</div>
+                <div class="stat-info">
+                    <h3 id="todayScans">0</h3>
+                    <p>Scans aujourd'hui</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange">💾</div>
+                <div class="stat-info">
+                    <h3 id="totalSize">0 MB</h3>
+                    <p>Espace utilisé</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon purple">🔍</div>
+                <div class="stat-info">
+                    <h3 id="scanTypes">0</h3>
+                    <p>Types de scans</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label>🔍 Rechercher</label>
+                    <input type="text" id="searchInput" placeholder="Rechercher par type, cible..." onkeyup="filterScans()">
+                </div>
+                <div class="filter-group">
+                    <label>📂 Type de scan</label>
+                    <select id="typeFilter" onchange="filterScans()">
+                        <option value="">Tous les types</option>
+                        <option value="network_scan">Network Scan</option>
+                        <option value="port_scan">Port Scan</option>
+                        <option value="dns_scan">DNS Scan</option>
+                        <option value="web_scan">Web Scan</option>
+                        <option value="subdomain_scan">Subdomain Scan</option>
+                        <option value="vulnerability_scan">Vulnerability Scan</option>
+                        <option value="brute_force">Brute Force</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>📅 Date</label>
+                    <input type="date" id="dateFilter" onchange="filterScans()">
+                </div>
+                <div class="filter-group">
+                    <button class="btn-filter" onclick="resetFilters()">🔄 Réinitialiser</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="action-bar">
+            <div class="bulk-actions">
+                <span class="selection-info">
+                    <span id="selectedCount">0</span> sélectionné(s)
+                </span>
+                <button class="btn-bulk" onclick="downloadSelected()" id="downloadBtn" disabled>
+                    💾 Télécharger
+                </button>
+                <button class="btn-bulk" onclick="generateReport()" id="reportBtn" disabled>
+                    📄 Générer rapport
+                </button>
+                <button class="btn-bulk danger" onclick="deleteSelected()" id="deleteBtn" disabled>
+                    🗑️ Supprimer
+                </button>
+            </div>
+        </div>
+
+        <!-- Scans Table -->
+        <div class="scans-container">
+            {% if scans %}
+            <table class="scans-table">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">
+                            <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                        </th>
+                        <th>Type de Scan</th>
+                        <th>Cible/Domaine</th>
+                        <th>Date</th>
+                        <th>Utilisateur</th>
+                        <th>Taille</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="scansTableBody">
+                    {% for scan in scans %}
+                    <tr data-filename="{{ scan.filename }}" 
+                        data-type="{{ scan.scan_type }}" 
+                        data-date="{{ scan.timestamp }}"
+                        data-target="{{ scan.target or scan.domain or scan.url or 'N/A' }}">
+                        <td>
+                            <input type="checkbox" class="scan-checkbox" value="{{ scan.filename }}" onchange="updateSelection()">
+                        </td>
+                        <td>
+                            <span class="scan-type-badge badge-{{ scan.scan_type.split('_')[0] }}">
+                                {{ scan.scan_type.replace('_', ' ').title() }}
+                            </span>
+                        </td>
+                        <td>{{ scan.target or scan.domain or scan.url or 'N/A' }}</td>
+                        <td>{{ scan.timestamp }}</td>
+                        <td>{{ scan.user or user.get('username', 'Unknown') }}</td>
+                        <td class="file-size">{{ (scan.size / 1024) | round(2) }} KB</td>
+                        <td>
+
+                            
+                            <div class="action-buttons">
+                                <button>
+                               <a href="{{ url_for('web_reports.view_scan', filename=scan.filename) }}" class="btn-action btn-view">
+                                    👁️ Voir
+                                </a>
+                                </button>
+                                <button class="btn-action btn-download" onclick="downloadScan('{{ scan.filename }}')">
+                                    💾 DL
+                                </button>
+                                <button class="btn-action btn-delete" onclick="confirmDelete('{{ scan.filename }}')">
+                                    🗑️
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">📭</div>
+                <h3>Aucun scan disponible</h3>
+                <p>Lancez votre premier scan depuis la Toolbox</p>
+                <a href="{{ url_for('web_scans.toolbox') }}" class="nav-btn" style="margin-top: 1rem;">🔧 Aller à la Toolbox</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🗑️ Confirmer la suppression</h3>
+                <span class="close" onclick="closeDeleteModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="deleteMessage">Êtes-vous sûr de vouloir supprimer ce scan ?</p>
+                <p style="color: #dc3545; font-weight: bold;">Cette action est irréversible.</p>
+                <div class="modal-actions">
+                    <button class="btn-bulk" onclick="closeDeleteModal()">Annuler</button>
+                    <button class="btn-bulk danger" onclick="executeDelete()">Supprimer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Generation Modal -->
+    <div id="reportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📄 Générer un rapport</h3>
+                <span class="close" onclick="closeReportModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="reportForm" method="post" action="{{ url_for('web_reports.generate_report') }}">
+                    <div class="filter-group" style="margin-bottom: 1.5rem;">
+                        <label>Nom du projet</label>
+                        <input type="text" name="project_name" placeholder="Mon Projet Pentest" required>
+                    </div>
+                    <p>Les scans sélectionnés seront inclus dans le rapport.</p>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-bulk" onclick="closeReportModal()">Annuler</button>
+                        <button type="submit" class="btn-bulk">Générer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedScans = [];
+        let deleteTarget = null;
+
+        // Calculate statistics on page load
+        window.onload = function() {
+            calculateStats();
+        };
+
+        function calculateStats() {
+            const rows = document.querySelectorAll('#scansTableBody tr');
+            const today = new Date().toISOString().split('T')[0];
+            let todayCount = 0;
+            let totalSize = 0;
+            const types = new Set();
+
+            rows.forEach(row => {
+                const date = row.dataset.date;
+                const type = row.dataset.type;
+                const sizeText = row.querySelector('.file-size').textContent;
+                const size = parseFloat(sizeText);
+
+                if (date && date.startsWith(today)) {
+                    todayCount++;
+                }
+
+                if (type) {
+                    types.add(type);
+                }
+
+                if (!isNaN(size)) {
+                    totalSize += size;
+                }
+            });
+
+            document.getElementById('todayScans').textContent = todayCount;
+            document.getElementById('totalSize').textContent = (totalSize / 1024).toFixed(2) + ' MB';
+            document.getElementById('scanTypes').textContent = types.size;
+        }
+
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.scan-checkbox');
+            
+            checkboxes.forEach(cb => {
+                if (!cb.closest('tr').style.display || cb.closest('tr').style.display !== 'none') {
+                    cb.checked = selectAll.checked;
+                }
+            });
+            
+            updateSelection();
+        }
+
+        function updateSelection() {
+            selectedScans = Array.from(document.querySelectorAll('.scan-checkbox:checked')).map(cb => cb.value);
+            
+            document.getElementById('selectedCount').textContent = selectedScans.length;
+            
+            const downloadBtn = document.getElementById('downloadBtn');
+            const reportBtn = document.getElementById('reportBtn');
+            const deleteBtn = document.getElementById('deleteBtn');
+            
+            const hasSelection = selectedScans.length > 0;
+            downloadBtn.disabled = !hasSelection;
+            reportBtn.disabled = !hasSelection;
+            deleteBtn.disabled = !hasSelection;
+        }
+
+        function filterScans() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const typeFilter = document.getElementById('typeFilter').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+            
+            const rows = document.querySelectorAll('#scansTableBody tr');
+            
+            rows.forEach(row => {
+                const type = row.dataset.type;
+                const target = row.dataset.target.toLowerCase();
+                const date = row.dataset.date;
+                
+                let showRow = true;
+                
+                // Search filter
+                if (searchText && !type.toLowerCase().includes(searchText) && !target.includes(searchText)) {
+                    showRow = false;
+                }
+                
+                // Type filter
+                if (typeFilter && type !== typeFilter) {
+                    showRow = false;
+                }
+                
+                // Date filter
+                if (dateFilter && !date.startsWith(dateFilter)) {
+                    showRow = false;
+                }
+                
+                row.style.display = showRow ? '' : 'none';
+            });
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('typeFilter').value = '';
+            document.getElementById('dateFilter').value = '';
+            filterScans();
+        }
+
+                function downloadScan(filename) {
+    // 🔥 Utiliser url_for pour générer l'URL correcte
+    window.location.href = "{{ url_for('web_reports.download_scan', filename='PLACEHOLDER') }}".replace('PLACEHOLDER', filename);
+}
+
+        function downloadSelected() {
+            if (selectedScans.length === 0) return;
+            
+            if (selectedScans.length === 1) {
+                downloadScan(selectedScans[0]);
+            } else {
+                // Download multiple as ZIP
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ url_for("web_reports.report_multiple_download") }}';
+                
+                selectedScans.forEach(filename => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'scans';
+                    input.value = filename;
+                    form.appendChild(input);
+                });
+                
+                document.body.appendChild(form);
+                form.submit();
+                document.body.removeChild(form);
+            }
+        }
+
+        function confirmDelete(filename) {
+            deleteTarget = filename ? [filename] : selectedScans;
+            
+            if (deleteTarget.length === 0) return;
+            
+            const message = deleteTarget.length === 1 
+                ? 'Êtes-vous sûr de vouloir supprimer ce scan ?'
+                : `Êtes-vous sûr de vouloir supprimer ${deleteTarget.length} scans ?`;
+            
+            document.getElementById('deleteMessage').textContent = message;
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+
+        function deleteSelected() {
+            confirmDelete(null);
+        }
+
+        function executeDelete() {
+            if (!deleteTarget || deleteTarget.length === 0) return;
+            
+            if (deleteTarget.length === 1) {
+                window.location.href = `{{ url_for('web_reports.delete_scan', filename='FILENAME') }}`.replace('FILENAME', deleteTarget[0]);
+            } else {
+                // Delete multiple
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ url_for("web_reports.delete_multiple") }}';
+                
+                deleteTarget.forEach(filename => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'scans';
+                    input.value = filename;
+                    form.appendChild(input);
+                });
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+            deleteTarget = null;
+        }
+
+        function generateReport() {
+            if (selectedScans.length === 0) return;
+            
+            // Add selected scans to the form
+            const form = document.getElementById('reportForm');
+            
+            // Remove old hidden inputs
+            form.querySelectorAll('input[name="scans"]').forEach(input => input.remove());
+            
+            // Add new ones
+            selectedScans.forEach(filename => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'scans';
+                input.value = filename;
+                form.appendChild(input);
+            });
+            
+            document.getElementById('reportModal').style.display = 'block';
+        }
+
+        function closeReportModal() {
+            document.getElementById('reportModal').style.display = 'none';
+        }
+
+        function exportAllJSON() {
+            window.location.href = '{{ url_for("web_reports.export_all_json") }}';
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const deleteModal = document.getElementById('deleteModal');
+            const reportModal = document.getElementById('reportModal');
+            
+            if (event.target == deleteModal) {
+                closeDeleteModal();
+            }
+            if (event.target == reportModal) {
+                closeReportModal();
+            }
+        }
+    </script>
+</body>
+</html>

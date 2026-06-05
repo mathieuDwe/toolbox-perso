@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Analysis - Pentool</title>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 { color: #1e3c72; font-size: 1.5rem; }
+
+        .nav-btn {
+            background: #007BFF;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .scan-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .scan-header {
+            background: linear-gradient(135deg, #0083B0, #00B4DB);
+            padding: 2rem;
+            text-align: center;
+            color: white;
+        }
+
+        .scan-header h2 { font-size: 2rem; margin-bottom: 0.5rem; }
+
+        .scan-body { padding: 2rem; }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 5px;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #007BFF;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 5px;
+        }
+
+        .form-group { margin-bottom: 1.5rem; }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 0.9rem;
+            border: 2px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #0083B0, #00B4DB);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>🌐 Web Analysis</h1>
+        <a href="{{ url_for('web_auth.dashboard') }}" class="nav-btn">🏠 Dashboard</a>
+        <a href="{{ url_for('web_scans.toolbox') }}" class="nav-btn">🔧 Toolbox</a>
+        <a href="{{ url_for('web_auth.logout') }}" class="nav-btn" style="background: #dc3545;">🚪 Déconnexion</a>
+    </div>
+
+    <div class="container">
+        <div class="scan-card">
+            <div class="scan-header">
+                <h2>Analyse complète d'un site web</h2>
+                <p>Technologies, CMS, Headers, SSL/TLS, Emails, Liens</p>
+            </div>
+
+            <div class="scan-body">
+
+                <div class="warning-box">
+                    <h3>⚠️ Avertissement</h3>
+                    <p>N'analysez que les sites pour lesquels vous avez l'autorisation.</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>ℹ️ Ce que l'analyse va détecter :</h3>
+                    <ul>
+                        <li>✔ Technologies utilisées (framework, serveur...)</li>
+                        <li>✔ CMS détecté</li>
+                        <li>✔ Headers de sécurité</li>
+                        <li>✔ Certificat SSL / configuration TLS</li>
+                        <li>✔ Emails présents sur la page</li>
+                        <li>✔ Tous les liens internes et externes</li>
+                    </ul>
+                </div>
+
+                <form method="POST" action="{{ url_for('web_scans.web_analysis') }}">
+                    <div class="form-group">
+                        <label for="target">URL à analyser *</label>
+                        <input type="text" id="target" name="url" placeholder="https://exemple.com/page?id=1" required>
+                    </div>
+                    <button type="submit" class="btn-submit">🚀 Lancer l'analyse</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subdomain Enumeration - Pentool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #1e3c72;
+            font-size: 1.5rem;
+        }
+
+        .nav-btn {
+            background: #007BFF;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover {
+            background: #0056b3;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .scan-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .scan-header {
+            background: linear-gradient(135deg, #fd7e14 0%, #f5576c 100%);
+            padding: 2rem;
+            text-align: center;
+            color: white;
+        }
+
+        .scan-header h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .scan-header p {
+            opacity: 0.9;
+        }
+
+        .scan-body {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #fd7e14;
+        }
+
+        .form-help {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+
+        .radio-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .radio-option {
+            position: relative;
+        }
+
+        .radio-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .radio-label {
+            display: block;
+            padding: 1rem;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .radio-label:hover {
+            border-color: #fd7e14;
+            background: #f8f9fa;
+        }
+
+        .radio-option input[type="radio"]:checked + .radio-label {
+            border-color: #fd7e14;
+            background: linear-gradient(135deg, #fd7e14 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .radio-label strong {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .radio-label small {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .slider-container {
+            margin: 1rem 0;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #dee2e6;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fd7e14 0%, #f5576c 100%);
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fd7e14 0%, #f5576c 100%);
+            cursor: pointer;
+            border: none;
+        }
+
+        .slider-value {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .current-value {
+            font-weight: bold;
+            color: #fd7e14;
+            font-size: 1.2rem;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #fd7e14 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .info-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 5px;
+        }
+
+        .info-box h3 {
+            color: #856404;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .info-box ul {
+            margin-left: 1.5rem;
+            color: #856404;
+        }
+
+        .warning-box {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 5px;
+        }
+
+        .warning-box h3 {
+            color: #721c24;
+            margin-bottom: 0.5rem;
+        }
+
+        .warning-box p {
+            color: #721c24;
+        }
+
+        .wordlist-section {
+            display: none;
+        }
+
+        .wordlist-section.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .stat-box {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #fd7e14;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fd7e14;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+
+        .preset-wordlists {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .preset-btn {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+        }
+
+        .preset-btn:hover {
+            border-color: #fd7e14;
+            background: white;
+        }
+
+        .preset-btn strong {
+            display: block;
+            color: #333;
+            margin-bottom: 0.3rem;
+        }
+
+        .preset-btn small {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #fd7e14;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .tips-section {
+            background: #e7f3ff;
+            border-left: 4px solid #007BFF;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 2rem;
+        }
+
+        .tips-section h4 {
+            color: #004085;
+            margin-bottom: 0.5rem;
+        }
+
+        .tips-section ul {
+            margin-left: 1.5rem;
+            color: #004085;
+        }
+
+        @media (max-width: 768px) {
+            .radio-group,
+            .preset-wordlists {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔎 Subdomain Enumeration</h1>
+  <a href="{{ url_for('web_auth.dashboard') }}" class="nav-btn">🏠 Dashboard</a>
+            <a href="{{ url_for('web_scans.toolbox') }}" class="nav-btn">🔧 Toolbox</a>
+            <a href="{{ url_for('web_auth.logout') }}" class="nav-btn" style="background: #dc3545;">🚪 Déconnexion</a>
+    </div>
+
+    <div class="container">
+        <div class="scan-card">
+            <div class="scan-header">
+                <h2>Énumération de Sous-domaines</h2>
+                <p>Découvrez tous les sous-domaines d'un domaine cible</p>
+            </div>
+
+            <div class="scan-body">
+                <div class="warning-box">
+                    <h3>⚠️ Avertissement</h3>
+                    <p>L'énumération de sous-domaines doit être effectuée uniquement sur des domaines que vous êtes autorisé à tester. Une énumération agressive peut être détectée.</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>ℹ️ Comment fonctionne l'énumération</h3>
+                    <ul>
+                        <li>Teste une liste de noms de sous-domaines communs</li>
+                        <li>Résout les DNS pour vérifier leur existence</li>
+                        <li>Scan multi-threadé pour plus de rapidité</li>
+                        <li>Supporte les wordlists personnalisées</li>
+                    </ul>
+                </div>
+
+                <form method="post" id="subdomainForm">
+                    <!-- Domaine cible -->
+                    <div class="form-group">
+                        <label for="domain">🎯 Domaine Cible *</label>
+                        <input 
+                            type="text" 
+                            id="domain" 
+                            name="domain" 
+                            placeholder="example.com" 
+                            required
+                        >
+                        <div class="form-help">Entrez le domaine principal (sans sous-domaine)</div>
+                    </div>
+
+                    <!-- Mode de scan -->
+                    <div class="form-group">
+                        <label>🔍 Mode de Scan</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="mode_fast" name="scan_mode" value="fast" checked>
+                                <label for="mode_fast" class="radio-label">
+                                    <strong>⚡ Rapide</strong>
+                                    <small>~35 sous-domaines</small>
+                                </label>
+                            </div>
+                            
+                            <div class="radio-option">
+                                <input type="radio" id="mode_standard" name="scan_mode" value="standard">
+                                <label for="mode_standard" class="radio-label">
+                                    <strong>🔍 Standard</strong>
+                                    <small>~100 sous-domaines</small>
+                                </label>
+                            </div>
+                            
+                            <div class="radio-option">
+                                <input type="radio" id="mode_extensive" name="scan_mode" value="extensive">
+                                <label for="mode_extensive" class="radio-label">
+                                    <strong>🚀 Extensif</strong>
+                                    <small>~500+ sous-domaines</small>
+                                </label>
+                            </div>
+
+                            <div class="radio-option">
+                                <input type="radio" id="mode_custom" name="scan_mode" value="custom">
+                                <label for="mode_custom" class="radio-label">
+                                    <strong>⚙️ Personnalisé</strong>
+                                    <small>Votre wordlist</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nombre de threads -->
+                    <div class="form-group">
+                        <label for="threads">🔧 Nombre de Threads (Parallélisme)</label>
+                        <div class="slider-container">
+                            <input 
+                                type="range" 
+                                id="threads" 
+                                name="threads" 
+                                class="slider"
+                                min="5" 
+                                max="100" 
+                                value="20"
+                                oninput="updateThreadValue(this.value)"
+                            >
+                            <div class="slider-value">
+                                <span>5 (Lent)</span>
+                                <span class="current-value" id="threadValue">20 threads</span>
+                                <span>100 (Rapide)</span>
+                            </div>
+                        </div>
+                        <div class="form-help">
+                            Plus de threads = plus rapide, mais peut être détecté. Recommandé: 20-30 threads.
+                        </div>
+                    </div>
+
+                    <!-- Wordlist personnalisée -->
+                    <div class="wordlist-section" id="customWordlistSection">
+
+                        <!-- 🌍 Wordlist depuis une URL (mode recommandé pour les grandes wordlists) -->
+                        <div class="form-group">
+                            <label for="wordlist_url">🌍 Wordlist depuis une URL</label>
+                            <input type="url"
+                                id="wordlist_url"
+                                name="wordlist_url"
+                                placeholder="https://exemple.com/wordlist.txt">
+                            <div class="form-help">
+                                Recommandé : pour les grandes wordlists (jusqu’à plusieurs millions d’entrées).<br>
+                                La wordlist sera téléchargée directement par le serveur.
+                            </div>
+                        </div>
+
+                        <div class="form-separator" style="margin:15px 0; text-align:center; opacity:0.6;">
+                            — ou —
+                        </div>
+
+                        <!-- 📝 Wordlist manuelle (textarea) -->
+                        <div class="form-group">
+                            <label for="custom_wordlist">📝 Wordlist Personnalisée (petites listes uniquement)</label>
+
+                            <!-- Presets -->
+                            <div style="margin-bottom: 1rem;">
+                                <strong style="display: block; margin-bottom: 0.5rem;">Ou choisir un preset :</strong>
+                                <div class="preset-wordlists">
+                                    <!-- … tes boutons preset ici … -->
+                                </div>
+                            </div>
+
+                            <textarea
+                                id="custom_wordlist"
+                                name="custom_wordlist"
+                                placeholder="www&#10;mail&#10;ftp&#10;api&#10;admin&#10;..."></textarea>
+
+                            <div class="form-help">
+                                Maximum recommandé : ~5 000 lignes.<br>
+                                Pour les wordlists volumineuses, utilisez l’URL ci-dessus.
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Stats -->
+                    <div class="stats-grid" id="wordlistStats">
+                        <div class="stat-box">
+                            <div class="stat-number" id="wordCount">0</div>
+                            <div class="stat-label">Sous-domaines</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number" id="estimatedTime">~0s</div>
+                            <div class="stat-label">Temps estimé</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                            
+                            <!-- Presets -->
+                            <div style="margin-bottom: 1rem;">
+                                <strong style="display: block; margin-bottom: 0.5rem;">Ou choisir un preset :</strong>
+                                <div class="preset-wordlists">
+                                    <button type="button" class="preset-btn" onclick="loadPreset('common')">
+                                        <strong>🎯 Communs</strong>
+                                        <small>www, mail, ftp, api, dev...</small>
+                                    </button>
+                                    <button type="button" class="preset-btn" onclick="loadPreset('corporate')">
+                                        <strong>🏢 Corporate</strong>
+                                        <small>vpn, intranet, portal, hr...</small>
+                                    </button>
+                                    <button type="button" class="preset-btn" onclick="loadPreset('technical')">
+                                        <strong>💻 Technique</strong>
+                                        <small>git, jenkins, staging, test...</small>
+                                    </button>
+                                    <button type="button" class="preset-btn" onclick="loadPreset('cloud')">
+                                        <strong>☁️ Cloud</strong>
+                                        <small>s3, bucket, cdn, static...</small>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <textarea 
+                                id="custom_wordlist" 
+                                name="custom_wordlist" 
+                                placeholder="www&#10;mail&#10;ftp&#10;api&#10;admin&#10;..."
+                            ></textarea>
+                            <div class="form-help">
+                                Un sous-domaine par ligne. Laissez vide pour utiliser la wordlist par défaut.
+                            </div>
+                        </div>
+
+                        <div class="stats-grid" id="wordlistStats">
+                            <div class="stat-box">
+                                <div class="stat-number" id="wordCount">0</div>
+                                <div class="stat-label">Sous-domaines</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-number" id="estimatedTime">~0s</div>
+                                <div class="stat-label">Temps estimé</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Options avancées -->
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" name="resolve_ips" value="1" checked>
+                            📍 Résoudre les adresses IP
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" name="check_http" value="1">
+                            🌐 Vérifier l'accessibilité HTTP/HTTPS (plus lent)
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        🚀 Lancer l'Énumération
+                    </button>
+                </form>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p><strong>Énumération en cours...</strong></p>
+                    <p id="loadingMessage">Test des sous-domaines en cours. Veuillez patienter...</p>
+                </div>
+
+                <!-- Tips -->
+                <div class="tips-section">
+                    <h4>💡 Conseils</h4>
+                    <ul>
+                        <li><strong>Rapidité vs Discrétion :</strong> Moins de threads = plus discret</li>
+                        <li><strong>Wordlist :</strong> Adaptez votre wordlist au type de cible (entreprise, e-commerce, tech...)</li>
+                        <li><strong>Résultats :</strong> Les sous-domaines trouvés peuvent révéler des services internes</li>
+                        <li><strong>Faux positifs :</strong> Certains DNS répondent à tout (wildcard), vérifiez manuellement</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Presets de wordlists
+        const presets = {
+            common: `www
+mail
+ftp
+webmail
+smtp
+pop
+imap
+admin
+blog
+shop
+api
+dev
+test
+staging
+portal
+vpn
+remote
+backup
+cloud
+cdn
+mobile
+app
+beta
+demo
+docs
+forum
+help
+support
+secure
+static
+media
+images
+assets`,
+            corporate: `vpn
+intranet
+portal
+sharepoint
+confluence
+wiki
+hr
+payroll
+crm
+erp
+finance
+accounting
+legal
+compliance
+training
+learning
+employees
+staff
+internal
+private
+extranet
+partner
+vendor
+supplier`,
+            technical: `git
+gitlab
+github
+jenkins
+ci
+cd
+build
+deploy
+docker
+kubernetes
+k8s
+grafana
+prometheus
+kibana
+elastic
+logs
+monitoring
+metrics
+status
+health
+dashboard
+admin-panel
+phpmyadmin
+webmin
+cpanel
+plesk`,
+            cloud: `s3
+bucket
+storage
+cdn
+cloudfront
+azure
+aws
+gcp
+static
+assets
+files
+downloads
+uploads
+backup
+archive
+data
+db
+database
+redis
+mongo
+elasticsearch
+kafka`
+        };
+
+        // Update thread value display
+        function updateThreadValue(value) {
+            document.getElementById('threadValue').textContent = value + ' threads';
+            updateEstimatedTime();
+        }
+
+        // Load preset wordlist
+        function loadPreset(presetName) {
+            const textarea = document.getElementById('custom_wordlist');
+            textarea.value = presets[presetName];
+            updateWordlistStats();
+        }
+
+        // Update wordlist stats
+        function updateWordlistStats() {
+            const textarea = document.getElementById('custom_wordlist');
+            const words = textarea.value.split('\n').filter(w => w.trim()).length;
+            document.getElementById('wordCount').textContent = words;
+            updateEstimatedTime();
+        }
+
+        // Update estimated time
+        function updateEstimatedTime() {
+            const threads = parseInt(document.getElementById('threads').value);
+            const words = parseInt(document.getElementById('wordCount').textContent) || 0;
+            
+            if (words === 0) {
+                document.getElementById('estimatedTime').textContent = '~0s';
+                return;
+            }
+            
+            // Estimation: ~0.5s per subdomain / threads
+            const seconds = Math.ceil((words * 0.5) / threads);
+            
+            if (seconds < 60) {
+                document.getElementById('estimatedTime').textContent = `~${seconds}s`;
+            } else if (seconds < 3600) {
+                const minutes = Math.ceil(seconds / 60);
+                document.getElementById('estimatedTime').textContent = `~${minutes}min`;
+            } else {
+                const hours = Math.ceil(seconds / 3600);
+                document.getElementById('estimatedTime').textContent = `~${hours}h`;
+            }
+        }
+
+        // Show/hide custom wordlist section
+        document.querySelectorAll('input[name="scan_mode"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const customSection = document.getElementById('customWordlistSection');
+                if (this.value === 'custom') {
+                    customSection.classList.add('active');
+                } else {
+                    customSection.classList.remove('active');
+                }
+            });
+        });
+
+        // Update stats on textarea change
+        document.getElementById('custom_wordlist').addEventListener('input', updateWordlistStats);
+
+        // Update threads slider
+        document.getElementById('threads').addEventListener('input', function() {
+            updateThreadValue(this.value);
+        });
+
+        // Form submission
+        document.getElementById('subdomainForm').addEventListener('submit', function(e) {
+            const mode = document.querySelector('input[name="scan_mode"]:checked').value;
+            const domain = document.getElementById('domain').value;
+            
+            // Validation for custom mode
+            if (mode === 'custom') {
+                const textarea = document.getElementById('custom_wordlist').value.trim();
+                const url = document.getElementById('wordlist_url').value.trim();
+
+                // Vérifie que l'un des deux est rempli
+                if (!textarea && !url) {
+                    e.preventDefault();
+                    alert("Veuillez entrer une wordlist ou fournir une URL.");
+                    return;
+                }
+            }
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.querySelector('.btn-submit').disabled = true;
+            document.querySelector('.btn-submit').textContent = '⏳ Énumération en cours...';
+            
+            // Update loading message
+            const threads = document.getElementById('threads').value;
+            document.getElementById('loadingMessage').textContent = 
+                `Test des sous-domaines de ${domain} avec ${threads} threads...`;
+        });
+
+        // Domain validation
+        document.getElementById('domain').addEventListener('input', function(e) {
+            const value = e.target.value;
+            const domainPattern = /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+            
+            if (value && !domainPattern.test(value)) {
+                e.target.setCustomValidity('Entrez un nom de domaine valide (ex: example.com)');
+            } else {
+                e.target.setCustomValidity('');
+            }
+        });
+    </script>
+
+    <script>
+    document.getElementById("wordlist_url").addEventListener("change", async function () {
+        const url = this.value.trim();
+        const textarea = document.getElementById("custom_wordlist");
+
+        let text = textarea.value.trim(); // texte depuis le textarea
+
+        // Si le textarea est vide et qu'une URL est renseignée, on récupère depuis l'URL
+        if (!text && url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("Erreur lors du téléchargement");
+
+                text = await response.text();
+            } catch (err) {
+                alert("Impossible de récupérer la wordlist depuis cette URL.");
+                console.error(err);
+                return;
+            }
+        }
+
+        if (!text) {
+            alert("Aucune wordlist à traiter.");
+            return;
+        }
+
+        // Ici 'text' contient soit le contenu du textarea, soit celui de l'URL
+        console.log(text); // ou utilise 'text' comme tu veux
+        updateWordlistStats(text); // met à jour les stats avec le contenu final
+    });
+    </script>
+
+</body>
+</html>

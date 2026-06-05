@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brute Force - Pentool</title>
+
+     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #1e3c72;
+            font-size: 1.5rem;
+        }
+
+        .nav-btn {
+            background: #007BFF;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover {
+            background: #0056b3;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .scan-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .scan-header {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            padding: 2rem;
+            text-align: center;
+            color: white;
+        }
+
+        .scan-header h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .scan-header p {
+            opacity: 0.9;
+        }
+
+        .scan-body {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .form-group textarea {
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #17a2b8;
+        }
+
+        .form-help {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 5px;
+        }
+
+        .info-box h3 {
+            color: #0c5460;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .info-box ul {
+            margin-left: 1.5rem;
+            color: #0c5460;
+        }
+
+        .info-box li {
+            margin: 0.3rem 0;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 5px;
+        }
+
+        .warning-box h3 {
+            color: #856404;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-load-url {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            transition: background 0.3s;
+        }
+
+        .btn-load-url:hover {
+            background: #5a6268;
+        }
+
+        .success-msg {
+            color: #28a745;
+            font-weight: bold;
+            margin-top: 0.5rem;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>🔐 Brute Force Pentest Tool</h1>
+        <div>
+            <a href="{{ url_for('web_auth.dashboard') }}" class="nav-btn">🏠 Dashboard</a>
+            <a href="{{ url_for('web_scans.toolbox') }}" class="nav-btn">🔧 Toolbox</a>
+            <a href="{{ url_for('web_auth.logout') }}" class="nav-btn" style="background: #dc3545;">🚪 Déconnexion</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="scan-card">
+            <div class="scan-header">
+                <h2>Brute Force SSH • FTP • HTTP</h2>
+                <p>Testez la robustesse des identifiants d'un service</p>
+            </div>
+
+            <div class="scan-body">
+                <div class="warning-box">
+                    <h3>⚠️ Avertissement</h3>
+                    <p>N'utilisez *jamais* cet outil sur une cible sans autorisation légale explicite.</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>ℹ️ Instructions</h3>
+                    <ul>
+                        <li>Entrez l'IP ou domaine cible (ex: <b>192.168.1.10</b>)</li>
+                        <li>Choisissez le service : SSH / FTP / HTTP</li>
+                        <li>Indiquez l'utilisateur à tester</li>
+                        <li>Saisissez une wordlist (un mot de passe par ligne) OU chargez depuis une URL</li>
+                    </ul>
+                </div>
+
+                <form action="{{ url_for('web_scans.brute_force') }}" method="POST">
+                    <div class="form-group">
+                        <label>Cible (IP / Domaine) *</label>
+                        <input type="text" name="target" placeholder="ex: 192.168.1.10" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Service *</label>
+                        <select id="service_select" name="service">
+                            <option value="ssh">SSH</option>
+                            <option value="ftp">FTP</option>
+                            <option value="http">HTTP Form</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Utilisateur *</label>
+                        <input type="text" name="username" placeholder="ex: admin" required>
+                    </div>
+
+                    <div class="form-group" id="port_block">
+                        <label>Port *</label>
+                        <input type="number" name="port" value="22">
+                    </div>
+
+                    <div class="form-group" id="url_block" style="display:none;">
+                        <label>URL du formulaire</label>
+                        <input type="text" name="url" placeholder="https://site.com/login">
+                    </div>
+
+                    <!-- WORDLIST URL (OBLIGATOIRE) -->
+                    <div class="form-group">
+                        <label for="wordlist_url">🌍 URL de la Wordlist *</label>
+                        <input type="url"
+                            id="wordlist_url"
+                            name="wordlist_url"
+                            placeholder="https://exemple.com/wordlist.txt"
+                            required>
+                        <div class="form-help">
+                            Entrez l'URL d'une wordlist (téléchargée côté serveur).<br>
+                            Exemple: <code>https://raw.githubusercontent.com/danielmiessler/SecLists/refs/heads/master/Passwords/Common-Credentials/100k-most-used-passwords-NCSC.txt</code>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">🚀 Lancer le Brute Force</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const serviceSelect = document.getElementById("service_select");
+        const portBlock = document.getElementById("port_block");
+        const urlBlock = document.getElementById("url_block");
+
+        // Gestion du changement de service
+        serviceSelect.addEventListener("change", function () {
+            if (this.value === "http") {
+                portBlock.style.display = "none";
+                urlBlock.style.display = "block";
+            } else {
+                portBlock.style.display = "block";
+                urlBlock.style.display = "none";
+                portBlock.querySelector("input").value = this.value === "ssh" ? 22 : 21;
+            }
+        });
+    </script>
+</body>
+</html>
